@@ -206,11 +206,12 @@ void excluir(FILE *arq)
         vet[i] = vet[i + 1];
     }
 
-    freopen("banho_petshop.dat", "w+b", arq);
+    freopen("ProjetoFinal_C.dat", "w+b", arq);
 
     fwrite(vet, sizeof(Animal), total - 1, arq);
 
     free(vet);
 
     printf("Registro excluído com sucesso!\n");
+
 }
