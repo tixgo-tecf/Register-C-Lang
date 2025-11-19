@@ -19,6 +19,7 @@ void cadastrar(FILE *arq);
 void consultar(FILE *arq);
 void listarTodos(FILE *arq);
 void excluir(FILE *arq);
+void gerarRelatorio(FILE *arq);
 
 int main()
 {
@@ -49,6 +50,7 @@ int main()
         printf("3 - Listar Todos\n");
         printf("4 - Excluir Registro\n");
         printf("5 - Mostrar quantidade\n");
+        printf("6 - Gerar Relatório\n");
         printf("0 - Sair\n");
         printf("Escolha: ");
         scanf("%d", &opcao);
@@ -70,6 +72,9 @@ int main()
             break;
         case 5:
             printf("Total de registros: %d\n", tamanho(arq));
+            break;
+        case 6:
+            gerarRelatorio(arq);
             break;
         case 0:
             printf("Encerrando...\n");
@@ -149,7 +154,7 @@ void consultar(FILE *arq)
         return;
     }
 
-    fseek(arq, cod *sizeof(Animal), SEEK_SET);
+    fseek(arq, cod * sizeof(Animal), SEEK_SET);
     fread(&a, sizeof(Animal), 1, arq);
 
     printf("\n=== DADOS DO ANIMAL [%d] ===\n", cod);
@@ -213,5 +218,33 @@ void excluir(FILE *arq)
     free(vet);
 
     printf("Registro excluído com sucesso!\n");
+}
 
+void gerarRelatorio(FILE *arq)
+{
+    int total = tamanho(arq);
+
+    if (total == 0)
+    {
+        printf("\nNenhum registro encontrado para gerar relatório.\n");
+        return;
+    }
+
+    FILE *rel = fopen("relatorio.txt", "w");
+    if (rel == NULL)
+    {
+        printf("Erro ao criar arquivo de relatório!\n");
+        return;
+    }
+    Animal a;
+    fseek(arq, 0, SEEK_SET);
+    fprintf(rel, "=== RELATÓRIO DE ANIMAIS ===\n");
+    for (int i = 0; i < total; i++)
+    {
+        fread(&a, sizeof(Animal), 1, arq);
+        fprintf(rel, "[%d] Animal: %s - Dono: %s - Idade: %d - Peso: %.2fkg\n",
+                i, a.nomeAnimal, a.nomeDono, a.idade, a.peso);
+    }
+    fclose(rel);
+    printf("Relatório gerado com sucesso em relatorio.txt!\n");
 }
